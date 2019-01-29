@@ -989,7 +989,7 @@ class Make
         $this->dom->addChild(
             $this->emit,
             "IE",
-            Strings::onlyNumbers($std->IE),
+            strtolower($std->IE) != 'isento' ? Strings::onlyNumbers($std->IE) : $std->IE,
             true,
             $identificador . "Inscrição Estadual do emitente"
         );
