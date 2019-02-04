@@ -9,6 +9,25 @@
 - Nota Técnica 2016.002 - v1.50
 - Nota Técnica 2016.002 - v1.51
 - Nota Técnica 2016.002 - v1.60
+- Nota Técnica 2018.005 - v1.00
+
+### Campos alterados e inclusos nessa última nota técnica, indicados em negrito:
+
+> F|xLgr|nro|xCpl|xBairro|cMun|xMun|UF|**CEP|cPais|xPais|fone|email|IE|**
+
+> **F02b|xNome|**
+
+> G|xLgr|nro|xCpl|xBairro|cMun|xMun|UF|**CEP|cPais|xPais|fone|email|IE|**
+
+> **G02b|xNome|**
+
+> K|cProdANVISA|vPMC|**xMotivoIsencao|**
+
+> N10b|orig|CST|vBCSTRet|vICMSSTRet|vBCSTDest|vICMSSTDest|**vBCFCPSTRet|pFCPSTRet|vFCPSTRet|**
+
+> **ZD|CNPJ|xContato|email|fone|CSRT|idCSRT|**
+
+### *Estas alterações somente serão validas em produção a partir de 29/04/2019*
 
 ```
 NOTAFISCAL|numero de notas|
