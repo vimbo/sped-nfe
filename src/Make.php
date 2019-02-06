@@ -943,6 +943,22 @@ class Make
         return $refECF;
     }
 
+    public static function replaceUnacceptableCharactersCustom($input)
+    {
+        if (empty($input)) {
+            return $input;
+        }
+        //& isolated, less than, greater than, quotation marks and apostrophes
+        //should be replaced by their html equivalent
+        $input = str_replace(
+            ['<','>','"',"'"],
+            ['&lt;','&gt;','&quot;','&#39;'],
+            $input
+        );
+        $input = self::normalize($input);
+        return trim($input);
+    }
+
     /**
      * Identificação do emitente da NF-e C01 pai A01
      * tag NFe/infNFe/emit
@@ -982,14 +998,14 @@ class Make
         $this->dom->addChild(
             $this->emit,
             "xNome",
-            Strings::replaceUnacceptableCharacters(substr(trim($std->xNome), 0, 60)),
+            $this->replaceUnacceptableCharactersCustom(substr(trim($std->xNome), 0, 60)),
             true,
             $identificador . "Razão Social ou Nome do emitente"
         );
         $this->dom->addChild(
             $this->emit,
             "xFant",
-            Strings::replaceUnacceptableCharacters(substr(trim($std->xFant), 0, 60)),
+            $this->replaceUnacceptableCharactersCustom(substr(trim($std->xFant), 0, 60)),
             false,
             $identificador . "Nome fantasia do emitente"
         );
@@ -1206,7 +1222,7 @@ class Make
         $this->dom->addChild(
             $this->dest,
             "xNome",
-            Strings::replaceUnacceptableCharacters(substr(trim($xNome), 0, 60)),
+            $this->replaceUnacceptableCharactersCustom(substr(trim($xNome), 0, 60)),
             $flagNome, //se mod 55 true ou mod 65 false
             $identificador . "Razão Social ou nome do destinatário"
         );
