@@ -583,7 +583,7 @@ class Make
         $this->dom->addChild(
             $ide,
             "natOp",
-            Strings::replaceUnacceptableCharacters(substr(trim($std->natOp), 0, 60)),
+            substr(trim($std->natOp), 0, 60),
             true,
             $identificador . "Descrição da Natureza da Operação"
         );
@@ -719,7 +719,7 @@ class Make
             $this->dom->addChild(
                 $ide,
                 "xJust",
-                Strings::replaceUnacceptableCharacters(substr(trim($std->xJust), 0, 256)),
+                substr(trim($std->xJust), 0, 256),
                 true,
                 $identificador . "Justificativa da entrada em contingência"
             );
@@ -944,45 +944,6 @@ class Make
         return $refECF;
     }
 
-    public function replaceUnacceptableCharactersCustom($input)
-    {
-        if (empty($input)) {
-            return $input;
-        }
-        //& isolated, less than, greater than, quotation marks and apostrophes
-        //should be replaced by their html equivalent
-        $input = str_replace(
-            ['<','>','"',"'"],
-            ['&lt;','&gt;','&quot;','&#39;'],
-            $input
-        );
-        $input = $this->normalize($input);
-        return trim($input);
-    }
-
-    public function normalize($input)
-    {
-        //Carriage Return, Tab and Line Feed is not acceptable in strings
-        $input = str_replace(["\r","\t","\n"], "", $input);
-        //Multiple spaces is not acceptable in strings
-        $input = preg_replace('/(?:\s\s+)/', ' ', $input);
-        //Only UTF-8 characters is acceptable
-        $input = Encoding::fixUTF8($input);
-        $input = preg_replace(
-            '/[\x00-\x08\x10\x0B\x0C\x0E-\x19\x7F]'.
-            '|[\x00-\x7F][\x80-\xBF]+'.
-            '|([\xC0\xC1]|[\xF0-\xFF])[\x80-\xBF]*'.
-            '|[\xC2-\xDF]((?![\x80-\xBF])|[\x80-\xBF]{2,})'.
-            '|[\xE0-\xEF](([\x80-\xBF](?![\x80-\xBF]))|(?![\x80-\xBF]{2})|[\x80-\xBF]{3,})/S',
-            '',
-            $input
-        );
-        $input = preg_replace('/\xE0[\x80-\x9F][\x80-\xBF]'.
-            '|\xED[\xA0-\xBF][\x80-\xBF]/S', '', $input);
-        //And no other control character is acceptable either
-        return preg_replace('/[[:cntrl:]]/', '', $input);
-    }
-
     /**
      * Identificação do emitente da NF-e C01 pai A01
      * tag NFe/infNFe/emit
@@ -1022,14 +983,14 @@ class Make
         $this->dom->addChild(
             $this->emit,
             "xNome",
-            $this->replaceUnacceptableCharactersCustom(substr(trim($std->xNome), 0, 60)),
+            substr(trim($std->xNome), 0, 60),
             true,
             $identificador . "Razão Social ou Nome do emitente"
         );
         $this->dom->addChild(
             $this->emit,
             "xFant",
-            $this->replaceUnacceptableCharactersCustom(substr(trim($std->xFant), 0, 60)),
+            substr(trim($std->xFant), 0, 60),
             false,
             $identificador . "Nome fantasia do emitente"
         );
@@ -1099,28 +1060,28 @@ class Make
         $this->dom->addChild(
             $this->enderEmit,
             "xLgr",
-            Strings::replaceUnacceptableCharacters(substr(trim($std->xLgr), 0, 60)),
+            substr(trim($std->xLgr), 0, 60),
             true,
             $identificador . "Logradouro do Endereço do emitente"
         );
         $this->dom->addChild(
             $this->enderEmit,
             "nro",
-            Strings::replaceUnacceptableCharacters(substr(trim($std->nro), 0, 60)),
+            substr(trim($std->nro), 0, 60),
             true,
             $identificador . "Número do Endereço do emitente"
         );
         $this->dom->addChild(
             $this->enderEmit,
             "xCpl",
-            Strings::replaceUnacceptableCharacters(substr(trim($std->xCpl), 0, 60)),
+            substr(trim($std->xCpl), 0, 60),
             false,
             $identificador . "Complemento do Endereço do emitente"
         );
         $this->dom->addChild(
             $this->enderEmit,
             "xBairro",
-            Strings::replaceUnacceptableCharacters(substr(trim($std->xBairro), 0, 60)),
+            substr(trim($std->xBairro), 0, 60),
             true,
             $identificador . "Bairro do Endereço do emitente"
         );
@@ -1134,7 +1095,7 @@ class Make
         $this->dom->addChild(
             $this->enderEmit,
             "xMun",
-            Strings::replaceUnacceptableCharacters(substr(trim($std->xMun), 0, 60)),
+            substr(trim($std->xMun), 0, 60),
             true,
             $identificador . "Nome do município do Endereço do emitente"
         );
@@ -1162,7 +1123,7 @@ class Make
         $this->dom->addChild(
             $this->enderEmit,
             "xPais",
-            Strings::replaceUnacceptableCharacters(substr(trim($std->xPais), 0, 60)),
+            substr(trim($std->xPais), 0, 60),
             false,
             $identificador . "Nome do País do Endereço do emitente"
         );
@@ -1246,7 +1207,7 @@ class Make
         $this->dom->addChild(
             $this->dest,
             "xNome",
-            $this->replaceUnacceptableCharactersCustom(substr(trim($xNome), 0, 60)),
+            substr(trim($xNome), 0, 60),
             $flagNome, //se mod 55 true ou mod 65 false
             $identificador . "Razão Social ou nome do destinatário"
         );
@@ -1283,7 +1244,7 @@ class Make
         $this->dom->addChild(
             $this->dest,
             "email",
-            Strings::replaceUnacceptableCharacters(substr(trim($std->email), 0, 60)),
+            substr(trim($std->email), 0, 60),
             false,
             $identificador . "Email do destinatário"
         );
@@ -1738,7 +1699,7 @@ class Make
         $std = $this->equilizeParameters($std, $possible);
         $infAdProd = $this->dom->createElement(
             "infAdProd",
-            Strings::replaceUnacceptableCharacters(substr(trim($std->infAdProd), 0, 500))
+            substr(trim($std->infAdProd), 0, 500)
         );
         $this->aInfAdProd[$std->item] = $infAdProd;
         return $infAdProd;
@@ -2923,7 +2884,8 @@ class Make
             'pRedBCEfet',
             'vBCEfet',
             'pICMSEfet',
-            'vICMSEfet'
+            'vICMSEfet',
+            'vICMSSubstituto'
         ];
         $std = $this->equilizeParameters($std, $possible);
         //totalização generica
@@ -3485,6 +3447,13 @@ class Make
                 );
                 $this->dom->addChild(
                     $icms,
+                    'vICMSSubstituto',
+                    $std->vICMSSubstituto,
+                    false,
+                    "$identificador [item $std->item] Valor do ICMS próprio do Substituto"
+                );
+                $this->dom->addChild(
+                    $icms,
                     'vICMSSTRet',
                     $std->vICMSSTRet,
                     false,
@@ -4036,7 +4005,13 @@ class Make
             'vICMSSTDest',
             'vBCFCPSTRet',
             'pFCPSTRet',
-            'vFCPSTRet'
+            'vFCPSTRet',
+            'pST',
+            'vICMSSubstituto',
+            'pRedBCEfet',
+            'vBCEfet',
+            'pICMSEfet',
+            'vICMSEfet'
         ];
         $std = $this->equilizeParameters($std, $possible);
         $icmsST = $this->dom->createElement("ICMSST");
@@ -4060,6 +4035,20 @@ class Make
             $std->vBCSTRet,
             true,
             "[item $std->item] Valor do BC do ICMS ST retido na UF remetente"
+        );
+        $this->dom->addChild(
+            $icmsST,
+            'pST',
+            $std->pST,
+            false,
+            "[item $std->item] Alíquota suportada pelo Consumidor Final"
+        );
+        $this->dom->addChild(
+            $icmsST,
+            'vICMSSubstituto',
+            $std->vICMSSubstituto,
+            false,
+            "[item $std->item] Valor do ICMS próprio do Substituto"
         );
         $this->dom->addChild(
             $icmsST,
@@ -4102,6 +4091,34 @@ class Make
             $std->vICMSSTDest,
             true,
             "[item $std->item] Valor do ICMS ST da UF destino"
+        );
+        $this->dom->addChild(
+            $icmsST,
+            'pRedBCEfet',
+            $std->pRedBCEfet,
+            false,
+            "[item $std->item] Percentual de redução da base de cálculo efetiva"
+        );
+        $this->dom->addChild(
+            $icmsST,
+            'vBCEfet',
+            $std->vBCEfet,
+            false,
+            "[item $std->item] Valor da base de cálculo efetiva"
+        );
+        $this->dom->addChild(
+            $icmsST,
+            'pICMSEfet',
+            $std->pICMSEfet,
+            false,
+            "[item $std->item] Alíquota do ICMS efetiva"
+        );
+        $this->dom->addChild(
+            $icmsST,
+            'vICMSEfet',
+            $std->vICMSEfet,
+            false,
+            "[item $std->item] Valor do ICMS efetivo"
         );
         //caso exista a tag aICMS[$std->item] inserir nela caso contrario criar
         if (!empty($this->aICMS[$std->item])) {
@@ -4151,7 +4168,8 @@ class Make
             'pRedBCEfet',
             'vBCEfet',
             'pICMSEfet',
-            'vICMSEfet'
+            'vICMSEfet',
+            'vICMSSubstituto'
         ];
         $std = $this->equilizeParameters($std, $possible);
         //totalizador generico
@@ -4425,6 +4443,13 @@ class Make
                     $std->pST,
                     isset($std->pST) ? true : false,
                     "[item $std->item] Alíquota suportada pelo Consumidor Final"
+                );
+                $this->dom->addChild(
+                    $icmsSN,
+                    'vICMSSubstituto',
+                    $std->vICMSSubstituto,
+                    false,
+                    "[item $std->item] Valor do ICMS próprio do Substituto"
                 );
                 $this->dom->addChild(
                     $icmsSN,
