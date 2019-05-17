@@ -33,318 +33,258 @@ class Make
      * @var array
      */
     public $erros = [];
-
     /**
      * @var string
      */
     public $chNFe;
-
     /**
      * @var string
      */
     public $xml;
-
     /**
      * @var string
      */
     protected $version;
-
     /**
      * @var integer
      */
     protected $mod = 55;
-
     /**
      * @var \NFePHP\Common\DOMImproved
      */
     public $dom;
-
     /**
      * @var integer
      */
     protected $tpAmb = 2;
-
     /**
      * @var DOMElement
      */
     protected $NFe;
-
     /**
      * @var DOMElement
      */
     protected $infNFe;
-
     /**
      * @var DOMElement
      */
     protected $ide;
-
     /**
      * @var DOMElement
      */
     protected $emit;
-
     /**
      * @var DOMElement
      */
     protected $enderEmit;
-
     /**
      * @var DOMElement
      */
     protected $dest;
-
     /**
      * @var DOMElement
      */
     protected $enderDest;
-
     /**
      * @var DOMElement
      */
     protected $retirada;
-
     /**
      * @var DOMElement
      */
     protected $entrega;
-
     /**
      * @var DOMElement
      */
     protected $total;
-
     /**
      * @var DOMElement
      */
     protected $cobr;
-
     /**
      * @var DOMElement
      */
     protected $transp;
-
     /**
      * @var DOMElement
      */
     protected $infAdic;
-
     /**
      * @var DOMElement
      */
     protected $exporta;
-
     /**
      * @var DOMElement
      */
     protected $compra;
-
     /**
      * @var DOMElement
      */
     protected $cana;
-
     /**
      * @var DOMElement
      */
     protected $infNFeSupl;
-
     /**
      * @var array of DOMElements
      */
     protected $aNFref = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aDup = [];
-
     /**
      * @var DOMElement
      */
     protected $pag;
-
     /**
      * @var array of DOMElements
      */
     protected $aDetPag = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aReboque = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aVol = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aAutXML = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aDet = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aProd = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aRastro = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aNVE = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aCest = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aRECOPI = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aDetExport = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aDI = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aAdi = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aVeicProd = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aMed = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aArma = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aComb = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aEncerrante = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aImposto = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aICMS = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aICMSUFDest = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aIPI = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aII = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aISSQN = [];
-
     /**
      * @var array
      */
     protected $aPIS = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aPISST = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aCOFINS = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aCOFINSST = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aImpostoDevol = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aInfAdProd = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aObsCont = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aObsFisco = [];
-
     /**
      * @var array of DOMElements
      */
     protected $aProcRef = [];
-
     /**
      * @var stdClass
      */
     protected $stdTot;
-
     /**
      * @var DOMElement
      */
     protected $infRespTec;
-
     /**
      * @var string
      */
     protected $csrt;
-    
-    protected $replaceAccentedChars;
+    /**
+     * @var boolean
+     */
+    protected $replaceAccentedChars = false;
 
     /**
      * Função construtora cria um objeto DOMDocument
@@ -381,7 +321,11 @@ class Make
         $this->stdTot->vNF = 0;
         $this->stdTot->vTotTrib = 0;
     }
-    
+
+    /**
+     * Set character convertion to ASCII only ou not
+     * @param bool $option
+     */
     public function setOnlyAscii($option = false)
     {
         $this->replaceAccentedChars = $option;
@@ -428,8 +372,8 @@ class Make
 
     /**
      * NFe xml mount method
-       * this function returns TRUE on success or FALSE on error
-       * The xml of the NFe must be retrieved by the getXML() function or
+     * this function returns TRUE on success or FALSE on error
+     * The xml of the NFe must be retrieved by the getXML() function or
      * directly by the public property $xml
      * @return boolean
      */
@@ -994,10 +938,13 @@ class Make
             false,
             $identificador . "Nome fantasia do emitente"
         );
+        if ($std->IE != 'ISENTO') {
+            $std->IE = Strings::onlyNumbers($std->IE);
+        }
         $this->dom->addChild(
             $this->emit,
             "IE",
-            strtolower($std->IE) != 'isento' ? Strings::onlyNumbers($std->IE) : $std->IE,
+            $std->IE,
             true,
             $identificador . "Inscrição Estadual do emitente"
         );
@@ -6827,7 +6774,7 @@ class Make
         $this->infNFeSupl = $infNFeSupl;
         return $infNFeSupl;
     }
-    
+
     /**
      * Informações do Responsável técnico ZD01 pai A01
      * tag NFe/infNFe/infRespTec (opcional)
@@ -6845,7 +6792,7 @@ class Make
             'CSRT',
             'idCSRT'
         ];
-        
+
         $std = $this->equilizeParameters($std, $possible);
         $infRespTec = $this->dom->createElement("infRespTec");
         $this->dom->addChild(
@@ -6900,7 +6847,7 @@ class Make
         $this->infRespTec = $infRespTec;
         return $infRespTec;
     }
-   
+
     /**
      * Tag raiz da NFe
      * tag NFe DOMNode
@@ -7387,6 +7334,7 @@ class Make
 
     /**
      * Includes missing or unsupported properties in stdClass
+     * Replace all unsuported chars
      * @param stdClass $std
      * @param array $possible
      * @return stdClass
@@ -7408,7 +7356,7 @@ class Make
         }
         return $std;
     }
-    
+
     /**
      * Calcula hash sha1 retornando Base64Binary
      * @param string $CSRT
@@ -7418,6 +7366,5 @@ class Make
     {
         $comb = $CSRT . $this->chNFe;
         return base64_encode(sha1($comb, true));
-        ;
     }
 }
