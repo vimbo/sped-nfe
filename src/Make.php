@@ -7404,7 +7404,7 @@ class Make
             $input
         );*/
 
-        $input = htmlentities($input);
+        $input = htmlentities($input, null, 'UTF-8');
 
         $input = Strings::normalize($input);
         return trim($input);
