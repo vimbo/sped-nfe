@@ -7370,7 +7370,7 @@ class Make
                 $std->$key = null;
             } else {
                 if (is_string($std->$key)) {
-                    $std->$key = trim($this->replaceUnacceptableCharacters($std->$key));
+                    $std->$key = trim(Strings::replaceUnacceptableCharacters($std->$key));
                     if ($this->replaceAccentedChars) {
                         $std->$key = Strings::toASCII($std->$key);
                     }
@@ -7378,36 +7378,6 @@ class Make
             }
         }
         return $std;
-    }
-
-    /**
-     * Clear inputs for build in XML
-     * Only UTF-8 characters is acceptable
-     * & isolated, less than, greater than, quotation marks and apostrophes
-     * should be replaced by their html equivalent
-     * Carriage Return, Tab and Line Feed is not acceptable in strings
-     * Multiple spaces is not acceptable in strings
-     * And no other control character is acceptable either
-     * @param string|null $input
-     * @return string|null
-     */
-    public function replaceUnacceptableCharacters($input)
-    {
-        if (empty($input)) {
-            return $input;
-        }
-        //& isolated, less than, greater than, quotation marks and apostrophes
-        //should be replaced by their html equivalent
-        /*$input = str_replace(
-            ['& ','<','>','"',"'"],
-            ['&amp; ','&lt;','&gt;','&quot;','&#39;'],
-            $input
-        );*/
-
-        $input = htmlentities($input, null, 'UTF-8');
-
-        $input = Strings::normalize($input);
-        return trim($input);
     }
 
     /**
