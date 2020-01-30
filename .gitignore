@@ -15,6 +15,5 @@ vendor
 nbproject
 clearTags
 build
-composer.lock
 config.json
 .phpunit.result.cache
