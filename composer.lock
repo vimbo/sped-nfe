@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9c691622d6a7c3c45fc964651da9e5ea",
+    "content-hash": "13e2541b5b5b4d90992f5047f0d9287f",
     "packages": [
         {
             "name": "justinrainbow/json-schema",
@@ -195,17 +195,11 @@
         },
         {
             "name": "nfephp-org/sped-common",
-            "version": "v5.0.44",
+            "version": "dev-upstream",
             "source": {
                 "type": "git",
-                "url": "https://github.com/nfephp-org/sped-common.git",
-                "reference": "0108a87d6b5577b76fca78d683450906ea611130"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/nfephp-org/sped-common/zipball/0108a87d6b5577b76fca78d683450906ea611130",
-                "reference": "0108a87d6b5577b76fca78d683450906ea611130",
-                "shasum": ""
+                "url": "https://Bot-vimbo:5abd33dbc9d48f89301a2d4b96711ba27d6f75ca@github.com/vimbo/sped-common.git",
+                "reference": "b065ac9f032b0bb253bd0fbdcb23648200c1f568"
             },
             "require": {
                 "ext-curl": "*",
@@ -238,7 +232,22 @@
                     "NFePHP\\Common\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "NFePHP\\Common\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "phpunit -c phpunit.xml.dist"
+                ],
+                "phpcs": [
+                    "./vendor/bin/phpcs --standard=psr2 src/"
+                ],
+                "phpcbf": [
+                    "./vendor/bin/phpcbf --standard=psr2 src/"
+                ]
+            },
             "license": [
                 "LGPL-3.0-or-later",
                 "GPL-3.0-or-later",
@@ -263,7 +272,7 @@
                 "nfephp",
                 "sped"
             ],
-            "time": "2019-12-06T12:50:35+00:00"
+            "time": "2020-01-30T18:47:41+00:00"
         },
         {
             "name": "nfephp-org/sped-gtin",
@@ -3948,7 +3957,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "nfephp-org/sped-common": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

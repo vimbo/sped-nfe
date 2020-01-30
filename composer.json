@@ -19,7 +19,7 @@
     ],
     "require": {
         "php" : ">= 7.0",
-        "nfephp-org/sped-common" : "^5.0",
+        "nfephp-org/sped-common" : "dev-upstream",
         "nfephp-org/sped-gtin" : "^1.0",
         "justinrainbow/json-schema": "^5.2",
         "ext-zlib": "*",
@@ -37,6 +37,12 @@
         "sebastian/phpcpd": "^4.1",
         "phpstan/phpstan": "^0.9.2"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://Bot-vimbo:5abd33dbc9d48f89301a2d4b96711ba27d6f75ca@github.com/vimbo/sped-common.git"
+        }
+    ],
     "autoload": {
         "psr-4": {
           "NFePHP\\NFe\\": "src/"
