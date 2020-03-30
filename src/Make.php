@@ -364,7 +364,7 @@ class Make
 
     /**
      * Call method of xml assembly. For compatibility only.
-     * @return boolean
+     * @return string
      */
     public function montaNFe()
     {
@@ -376,13 +376,16 @@ class Make
      * this function returns TRUE on success or FALSE on error
      * The xml of the NFe must be retrieved by the getXML() function or
      * directly by the public property $xml
-     * @return boolean
+     *
+     * @return string
+     * @throws RuntimeException
      */
     public function monta()
     {
-        $this->errors = $this->dom->errors;
-        if (count($this->errors) > 0) {
-            return false;
+        if (!empty($this->errors)) {
+            $this->errors = array_merge($this->errors, $this->dom->errors);
+        } else {
+            $this->errors = $this->dom->errors;
         }
         //cria a tag raiz da Nfe
         $this->buildNFe();
@@ -438,7 +441,10 @@ class Make
         // testa da chave
         $this->checkNFeKey($this->dom);
         $this->xml = $this->dom->saveXML();
-        return true;
+        if (count($this->errors) > 0) {
+            throw new RuntimeException('Existem erros nas tags. Obtenha os erros com getErrors().');
+        }
+        return $this->xml;
     }
 
     /**
@@ -451,7 +457,6 @@ class Make
     {
         $possible = ['Id', 'versao', 'pk_nItem'];
         $std = $this->equilizeParameters($std, $possible);
-
         $chave = preg_replace('/[^0-9]/', '', $std->Id);
         $this->infNFe = $this->dom->createElement("infNFe");
         $this->infNFe->setAttribute("Id", 'NFe' . $chave);
@@ -1715,8 +1720,18 @@ class Make
         $cean = !empty($std->cEAN) ? trim(strtoupper($std->cEAN)) : '';
         $ceantrib = !empty($std->cEANTrib) ? trim(strtoupper($std->cEANTrib)) : '';
         //throw exception if not is Valid
-        Gtin::isValid($cean);
-        Gtin::isValid($ceantrib);
+        try {
+            Gtin::isValid($cean);
+        } catch (\InvalidArgumentException $e) {
+            $this->errors[] = "cEANT {$cean} " . $e->getMessage();
+        }
+        
+        try {
+            Gtin::isValid($ceantrib);
+        } catch (\InvalidArgumentException $e) {
+            $this->errors[] = "cEANTrib {$ceantrib} " . $e->getMessage();
+        }
+        
         $identificador = 'I01 <prod> - ';
         $prod = $this->dom->createElement("prod");
         $this->dom->addChild(
@@ -3279,9 +3294,6 @@ class Make
                 );
                 break;
             case '51':
-                $this->stdTot->vBC += (float) !empty($std->vBC) ? $std->vBC : 0;
-                $this->stdTot->vICMS += (float) !empty($std->vICMS) ? $std->vICMS : 0;
-
                 $icms = $this->dom->createElement("ICMS51");
                 $this->dom->addChild(
                     $icms,
@@ -4135,7 +4147,7 @@ class Make
         $std = $this->equilizeParameters($std, $possible);
         //totalizador generico
         $this->stdTot->vFCPST += (float) !empty($std->vFCPST) ? $std->vFCPST : 0;
-        $this->stdTot->vFCPSTRet += (float) !empty($std->vFCPST) ? $std->vFCPSTRet : 0;
+        $this->stdTot->vFCPSTRet += (float) !empty($std->vFCPSTRet) ? $std->vFCPSTRet : 0;
         switch ($std->CSOSN) {
             case '101':
                 $icmsSN = $this->dom->createElement("ICMSSN101");
@@ -7337,15 +7349,12 @@ class Make
             $tpEmis,
             $cNF
         );
-        //caso a chave contida na NFe esteja errada
-        //substituir a chave
-        if ($chaveMontada != $chave) {
-            //throw new RuntimeException("A chave informada é diferente da chave
-            //montada com os dados [correto: $chaveMontada].");
-            $ide->getElementsByTagName('cDV')->item(0)->nodeValue = substr($chaveMontada, -1);
-            $infNFe = $dom->getElementsByTagName("infNFe")->item(0);
-            $infNFe->setAttribute("Id", "NFe" . $chaveMontada);
+        if (empty($chave)) {
+            //chave não foi passada por parâmetro então colocar a chavemontada
+            $infNFe->setAttribute('Id', "NFe$chaveMontada");
+            $chave = $chaveMontada;
             $this->chNFe = $chaveMontada;
+            $ide->getElementsByTagName('cDV')->item(0)->nodeValue = substr($chave, -1);
             //trocar também o hash se o CSRT for passado
             if (!empty($this->csrt)) {
                 $hashCSRT = $this->hashCSRT($this->csrt);
@@ -7353,6 +7362,21 @@ class Make
                     ->item(0)->nodeValue = $hashCSRT;
             }
         }
+        //caso a chave contida na NFe esteja errada
+        //substituir a chave
+        if ($chaveMontada != $chave) {
+            $this->chNFe = $chaveMontada;
+            $this->errors[] = "A chave informada está incorreta [$chave] => [correto: $chaveMontada].";
+        }
+    }
+    
+    /**
+     * Retorna os erros detectados
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->errors;
     }
 
     /**

@@ -170,6 +170,10 @@ class Tools
      * @var string
      */
     protected $typePerson = 'J';
+    /**
+     * @var string
+     */
+    protected $timezone;
 
     /**
      * Loads configurations and Digital Certificate, map all paths, set timezone and instanciate Contingency::class
@@ -200,7 +204,7 @@ class Tools
      */
     public function setEnvironmentTimeZone($acronym)
     {
-        date_default_timezone_set(TimeZoneByUF::get($acronym));
+        $this->timezone = TimeZoneByUF::get($acronym);
     }
 
     /**
@@ -213,10 +217,10 @@ class Tools
     {
         $cnpj = $this->certificate->getCnpj();
         $type = 'J';
-        if (substr($cnpj, 0, 1) === 'N') {
+        if (empty($cnpj)) {
             //não é CNPJ, então verificar se é CPF
             $cpf = $this->certificate->getCpf();
-            if (substr($cpf, 0, 1) !== 'N') {
+            if (!empty($cpf)) {
                 $type = 'F';
             } else {
                 //não foi localizado nem CNPJ e nem CPF esse certificado não é usável
@@ -513,7 +517,7 @@ class Tools
             throw new \RuntimeException('Em contingencia FSDA ou OFFLINE não é possivel acessar os webservices.');
         }
         $this->checkSoap();
-        return (string) $this->soap->send(
+        $response = (string) $this->soap->send(
             $this->urlService,
             $this->urlMethod,
             $this->urlAction,
@@ -523,6 +527,7 @@ class Tools
             $request,
             $this->objHeader
         );
+        return Strings::normalize($response);
     }
 
     /**
