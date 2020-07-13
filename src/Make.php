@@ -507,7 +507,7 @@ class Make
             'xJust'
         ];
         $std = $this->equilizeParameters($std, $possible);
-        
+
         if (empty($std->cNF)) {
             $std->cNF = Keys::random($std->nNF);
         }
@@ -930,20 +930,23 @@ class Make
         $std = $this->equilizeParameters($std, $possible);
         $identificador = 'C01 <emit> - ';
         $this->emit = $this->dom->createElement("emit");
-        $this->dom->addChild(
-            $this->emit,
-            "CNPJ",
-            Strings::onlyNumbers($std->CNPJ),
-            false,
-            $identificador . "CNPJ do emitente"
-        );
-        $this->dom->addChild(
-            $this->emit,
-            "CPF",
-            Strings::onlyNumbers($std->CPF),
-            false,
-            $identificador . "CPF do remetente"
-        );
+        if (!empty($std->CNPJ)) {
+            $this->dom->addChild(
+                $this->emit,
+                "CNPJ",
+                Strings::onlyNumbers($std->CNPJ),
+                false,
+                $identificador . "CNPJ do emitente"
+            );
+        } elseif (!empty($std->CPF)) {
+            $this->dom->addChild(
+                $this->emit,
+                "CPF",
+                Strings::onlyNumbers($std->CPF),
+                false,
+                $identificador . "CPF do remetente"
+            );
+        }
         $this->dom->addChild(
             $this->emit,
             "xNome",
@@ -982,13 +985,15 @@ class Make
             false,
             $identificador . "Inscrição Municipal do Prestador de Serviço do emitente"
         );
-        $this->dom->addChild(
-            $this->emit,
-            "CNAE",
-            Strings::onlyNumbers($std->CNAE),
-            false,
-            $identificador . "CNAE fiscal do emitente"
-        );
+        if (!empty($std->IM) && !empty($std->CNAE)) {
+            $this->dom->addChild(
+                $this->emit,
+                "CNAE",
+                Strings::onlyNumbers($std->CNAE),
+                false,
+                $identificador . "CNAE fiscal do emitente"
+            );
+        }
         $this->dom->addChild(
             $this->emit,
             "CRT",
@@ -1725,13 +1730,13 @@ class Make
         } catch (\InvalidArgumentException $e) {
             $this->errors[] = "cEANT {$cean} " . $e->getMessage();
         }
-        
+
         try {
             Gtin::isValid($ceantrib);
         } catch (\InvalidArgumentException $e) {
             $this->errors[] = "cEANTrib {$ceantrib} " . $e->getMessage();
         }
-        
+
         $identificador = 'I01 <prod> - ';
         $prod = $this->dom->createElement("prod");
         $this->dom->addChild(
@@ -4752,8 +4757,6 @@ class Make
             'vUnid'
         ];
         $std = $this->equilizeParameters($std, $possible);
-        //totalizador
-        $this->stdTot->vIPI += (float) $std->vIPI;
         $ipi = $this->dom->createElement('IPI');
         $this->dom->addChild(
             $ipi,
@@ -4792,6 +4795,8 @@ class Make
             "[item $std->item] Código de Enquadramento Legal do IPI"
         );
         if ($std->CST == '00' || $std->CST == '49' || $std->CST == '50' || $std->CST == '99') {
+            //totalizador
+            $this->stdTot->vIPI += (float) $std->vIPI;
             $ipiTrib = $this->dom->createElement('IPITrib');
             $this->dom->addChild(
                 $ipiTrib,
@@ -4921,8 +4926,7 @@ class Make
             'vAliqProd'
         ];
         $std = $this->equilizeParameters($std, $possible);
-        //totalizador
-        $this->stdTot->vPIS += (float) !empty($std->vPIS) ? $std->vPIS : 0;
+        
         switch ($std->CST) {
             case '01':
             case '02':
@@ -4955,6 +4959,8 @@ class Make
                     true,
                     "[item $std->item] Valor do PIS"
                 );
+                //totalizador
+                $this->stdTot->vPIS += (float) !empty($std->vPIS) ? $std->vPIS : 0;
                 break;
             case '03':
                 $pisItem = $this->dom->createElement('PISQtde');
@@ -4986,6 +4992,8 @@ class Make
                     true,
                     "[item $std->item] Valor do PIS"
                 );
+                //totalizador
+                $this->stdTot->vPIS += (float) !empty($std->vPIS) ? $std->vPIS : 0;
                 break;
             case '04':
             case '05':
@@ -5069,6 +5077,8 @@ class Make
                     true,
                     "[item $std->item] Valor do PIS"
                 );
+                //totalizador
+                $this->stdTot->vPIS += (float) !empty($std->vPIS) ? $std->vPIS : 0;
                 break;
         }
         $pis = $this->dom->createElement('PIS');
@@ -5157,12 +5167,12 @@ class Make
             'vAliqProd'
         ];
         $std = $this->equilizeParameters($std, $possible);
-        //totalizador
-        $this->stdTot->vCOFINS += (float) $std->vCOFINS;
         switch ($std->CST) {
             case '01':
             case '02':
                 $confinsItem = $this->buildCOFINSAliq($std);
+                //totalizador
+                $this->stdTot->vCOFINS += (float) $std->vCOFINS;
                 break;
             case '03':
                 $confinsItem = $this->dom->createElement('COFINSQtde');
@@ -5194,6 +5204,8 @@ class Make
                     true,
                     "[item $std->item] Valor do COFINS"
                 );
+                //totalizador
+                $this->stdTot->vCOFINS += (float) $std->vCOFINS;
                 break;
             case '04':
             case '05':
@@ -5228,6 +5240,8 @@ class Make
             case '98':
             case '99':
                 $confinsItem = $this->buildCOFINSoutr($std);
+                //totalizador
+                $this->stdTot->vCOFINS += (float) $std->vCOFINS;
                 break;
         }
         $confins = $this->dom->createElement('COFINS');
@@ -7211,7 +7225,7 @@ class Make
                 $this->dom->appChild($det, $child, "Inclusão do node imposto");
             }
             //insere impostoDevol
-            if (!empty($this->aImpostoDevol)) {
+            if (!empty($this->aImpostoDevol[$nItem])) {
                 $child = $this->aImpostoDevol[$nItem];
                 $this->dom->appChild($det, $child, "Inclusão do node impostoDevol");
             }
@@ -7369,7 +7383,7 @@ class Make
             $this->errors[] = "A chave informada está incorreta [$chave] => [correto: $chaveMontada].";
         }
     }
-    
+
     /**
      * Retorna os erros detectados
      * @return array
@@ -7414,7 +7428,7 @@ class Make
         $comb = $CSRT . $this->chNFe;
         return base64_encode(sha1($comb, true));
     }
-    
+
     protected function conditionalNumberFormatting($value = null, $decimal = 2)
     {
         if (is_numeric($value)) {
