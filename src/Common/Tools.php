@@ -597,4 +597,23 @@ class Tools
             $this->soap = new SoapCurl($this->certificate);
         }
     }
+    
+    /**
+     * Verify if xml model is equal as modelo property
+     * @param string $xml
+     * @return bool
+     */
+    protected function checkModelFromXml($xml)
+    {
+        $dom = new \DOMDocument();
+        $dom->loadXML($xml);
+        $model = $dom->getElementsByTagName('mod')->item(0)->nodeValue;
+        $check = $model == $this->modelo;
+        $correct = $this->modelo == 55 ? 65 : 55;
+        if (!$check) {
+            throw new InvalidArgumentException('Você passou um XML de modelo incorreto. '
+                . "Use o método \$tools->model({$correct}), para selecionar o "
+                . 'modelo correto a ser usado');
+        }
+    }
 }

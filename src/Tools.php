@@ -72,6 +72,9 @@ class Tools extends ToolsCommon
         }
         $ax = [];
         foreach ($aXml as $xml) {
+            //verifica se o modelo do XML é o mesmo setado na classe
+            //gera um exception se não for
+            $this->checkModelFromXml($xml);
             $ax[] = trim(preg_replace("/<\?xml.*?\?>/", "", $xml));
         }
         $sxml = trim(implode("", $ax));
