@@ -442,6 +442,10 @@ class Make
         $this->dom->appChild($this->infNFe, $this->infRespTec, 'Falta tag "infNFe"');
         //[1] tag infNFe (1 A01)
         $this->dom->appChild($this->NFe, $this->infNFe, 'Falta tag "NFe"');
+        //[0] tag QRRCode Adicionado por Cleyton (Vimbo)
+        if($this->infNFeSupl){
+            $this->dom->appChild($this->NFe, $this->infNFeSupl, 'Falta tag "infNFeSupl"');
+        }
         //[0] tag NFe
         $this->dom->appendChild($this->NFe);
         // testa da chave
